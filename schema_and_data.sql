@@ -1,0 +1,158 @@
+-- Schema definition
+
+CREATE TABLE DEPARTMENT (
+    DeptID NUMBER PRIMARY KEY,
+    DeptName VARCHAR2(100) UNIQUE NOT NULL
+);
+
+CREATE TABLE STUDENT (
+    StudentID NUMBER PRIMARY KEY,
+    FirstName VARCHAR2(50) NOT NULL,
+    LastName VARCHAR2(50) NOT NULL,
+    Major VARCHAR2(100),
+    Level VARCHAR2(20) CHECK (Level IN ('Freshman', 'Sophomore', 'Junior', 'Senior'))
+);
+
+CREATE TABLE TUTOR (
+    TutorID NUMBER PRIMARY KEY,
+    FirstName VARCHAR2(50) NOT NULL,
+    LastName VARCHAR2(50) NOT NULL,
+    Email VARCHAR2(100) UNIQUE,
+    DeptID NUMBER NOT NULL,
+    FOREIGN KEY (DeptID) REFERENCES DEPARTMENT(DeptID)
+);
+
+CREATE TABLE COURSE (
+    CourseID NUMBER PRIMARY KEY,
+    Code VARCHAR2(20) UNIQUE NOT NULL,
+    Title VARCHAR2(100) NOT NULL,
+    DeptID NUMBER NOT NULL,
+    TutorID NUMBER NOT NULL,
+    FOREIGN KEY (DeptID) REFERENCES DEPARTMENT(DeptID),
+    FOREIGN KEY (TutorID) REFERENCES TUTOR(TutorID)
+);
+
+CREATE TABLE TUTORING_SESSION (
+    SessionID NUMBER PRIMARY KEY,
+    SessionDate DATE NOT NULL,
+    StartTime TIMESTAMP NOT NULL,
+    EndTime TIMESTAMP NOT NULL,
+    TutorID NUMBER NOT NULL,
+    StudentID NUMBER NOT NULL,
+    CourseID NUMBER NOT NULL,
+    FOREIGN KEY (TutorID) REFERENCES TUTOR(TutorID),
+    FOREIGN KEY (StudentID) REFERENCES STUDENT(StudentID),
+    FOREIGN KEY (CourseID) REFERENCES COURSE(CourseID),
+    CHECK (EndTime > StartTime)
+);
+
+CREATE TABLE FEEDBACK (
+    FeedbackID NUMBER PRIMARY KEY,
+    SessionID NUMBER NOT NULL,
+    Rating NUMBER CHECK (Rating BETWEEN 1 AND 5),
+    Comments VARCHAR2(500),
+    FOREIGN KEY (SessionID) REFERENCES TUTORING_SESSION(SessionID)
+);
+
+-- Sample data
+
+INSERT INTO DEPARTMENT VALUES (1, 'Software Engineering');
+INSERT INTO DEPARTMENT VALUES (2, 'Computer Science');
+INSERT INTO DEPARTMENT VALUES (3, 'Mathematics');
+
+INSERT INTO STUDENT VALUES (1, 'Ali', 'Khan', 'Software Engineering', 'Freshman');
+INSERT INTO STUDENT VALUES (2, 'Sara', 'Ahmed', 'Computer Science', 'Sophomore');
+INSERT INTO STUDENT VALUES (3, 'Omar', 'Hussain', 'Mathematics', 'Junior');
+INSERT INTO STUDENT VALUES (4, 'Fatima', 'Zafar', 'Software Engineering', 'Senior');
+INSERT INTO STUDENT VALUES (5, 'Hamza', 'Ali', 'Computer Science', 'Freshman');
+INSERT INTO STUDENT VALUES (6, 'Aisha', 'Khalid', 'Mathematics', 'Sophomore');
+INSERT INTO STUDENT VALUES (7, 'Usman', 'Shah', 'Software Engineering', 'Junior');
+INSERT INTO STUDENT VALUES (8, 'Maryam', 'Rashid', 'Computer Science', 'Senior');
+INSERT INTO STUDENT VALUES (9, 'Bilal', 'Yousuf', 'Mathematics', 'Freshman');
+INSERT INTO STUDENT VALUES (10, 'Zainab', 'Khan', 'Software Engineering', 'Sophomore');
+
+INSERT INTO TUTOR VALUES (1, 'Ahmed', 'Raza', 'ahmed.raza@univ.edu', 1);
+INSERT INTO TUTOR VALUES (2, 'Sana', 'Malik', 'sana.malik@univ.edu', 2);
+INSERT INTO TUTOR VALUES (3, 'Ali', 'Qureshi', 'ali.qureshi@univ.edu', 3);
+INSERT INTO TUTOR VALUES (4, 'Sara', 'Hassan', 'sara.hassan@univ.edu', 1);
+INSERT INTO TUTOR VALUES (5, 'Omar', 'Farooq', 'omar.farooq@univ.edu', 2);
+
+INSERT INTO COURSE VALUES (1, 'DB101', 'Database Systems', 1, 1);
+INSERT INTO COURSE VALUES (2, 'CS210', 'Data Structures', 2, 2);
+INSERT INTO COURSE VALUES (3, 'MATH101', 'Calculus I', 3, 3);
+INSERT INTO COURSE VALUES (4, 'SE410', 'Software Engineering Capstone', 1, 4);
+INSERT INTO COURSE VALUES (5, 'CS330', 'Algorithms', 2, 5);
+
+INSERT INTO TUTORING_SESSION VALUES (
+    1,
+    TO_DATE('2025-12-01','YYYY-MM-DD'),
+    TO_TIMESTAMP('2025-12-01 10:00:00','YYYY-MM-DD HH24:MI:SS'),
+    TO_TIMESTAMP('2025-12-01 11:00:00','YYYY-MM-DD HH24:MI:SS'),
+    1, 1, 1
+);
+
+INSERT INTO TUTORING_SESSION VALUES (
+    2,
+    TO_DATE('2025-12-02','YYYY-MM-DD'),
+    TO_TIMESTAMP('2025-12-02 12:00:00','YYYY-MM-DD HH24:MI:SS'),
+    TO_TIMESTAMP('2025-12-02 13:00:00','YYYY-MM-DD HH24:MI:SS'),
+    2, 2, 2
+);
+
+INSERT INTO TUTORING_SESSION VALUES (
+    3,
+    TO_DATE('2025-12-03','YYYY-MM-DD'),
+    TO_TIMESTAMP('2025-12-03 14:00:00','YYYY-MM-DD HH24:MI:SS'),
+    TO_TIMESTAMP('2025-12-03 15:00:00','YYYY-MM-DD HH24:MI:SS'),
+    3, 3, 3
+);
+
+INSERT INTO TUTORING_SESSION VALUES (
+    4,
+    TO_DATE('2025-12-04','YYYY-MM-DD'),
+    TO_TIMESTAMP('2025-12-04 09:00:00','YYYY-MM-DD HH24:MI:SS'),
+    TO_TIMESTAMP('2025-12-04 10:30:00','YYYY-MM-DD HH24:MI:SS'),
+    4, 4, 4
+);
+
+INSERT INTO TUTORING_SESSION VALUES (
+    5,
+    TO_DATE('2025-12-05','YYYY-MM-DD'),
+    TO_TIMESTAMP('2025-12-05 11:00:00','YYYY-MM-DD HH24:MI:SS'),
+    TO_TIMESTAMP('2025-12-05 12:00:00','YYYY-MM-DD HH24:MI:SS'),
+    5, 5, 5
+);
+
+INSERT INTO TUTORING_SESSION VALUES (
+    6,
+    TO_DATE('2025-12-06','YYYY-MM-DD'),
+    TO_TIMESTAMP('2025-12-06 13:00:00','YYYY-MM-DD HH24:MI:SS'),
+    TO_TIMESTAMP('2025-12-06 14:00:00','YYYY-MM-DD HH24:MI:SS'),
+    1, 6, 1
+);
+
+INSERT INTO TUTORING_SESSION VALUES (
+    7,
+    TO_DATE('2025-12-07','YYYY-MM-DD'),
+    TO_TIMESTAMP('2025-12-07 15:00:00','YYYY-MM-DD HH24:MI:SS'),
+    TO_TIMESTAMP('2025-12-07 16:00:00','YYYY-MM-DD HH24:MI:SS'),
+    2, 7, 2
+);
+
+INSERT INTO TUTORING_SESSION VALUES (
+    8,
+    TO_DATE('2025-12-08','YYYY-MM-DD'),
+    TO_TIMESTAMP('2025-12-08 10:00:00','YYYY-MM-DD HH24:MI:SS'),
+    TO_TIMESTAMP('2025-12-08 11:30:00','YYYY-MM-DD HH24:MI:SS'),
+    3, 8, 3
+);
+
+INSERT INTO FEEDBACK VALUES (1, 1, 5, 'Very helpful session');
+INSERT INTO FEEDBACK VALUES (2, 2, 4, 'Good explanation');
+INSERT INTO FEEDBACK VALUES (3, 3, 3, 'Average session');
+INSERT INTO FEEDBACK VALUES (4, 4, 5, 'Excellent tutor');
+INSERT INTO FEEDBACK VALUES (5, 5, 4, 'Clear and concise');
+INSERT INTO FEEDBACK VALUES (6, 6, 5, 'Very effective session');
+INSERT INTO FEEDBACK VALUES (7, 7, 2, 'Needs improvement');
+INSERT INTO FEEDBACK VALUES (8, 8, 3, 'Decent session');
+
